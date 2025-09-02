@@ -79,9 +79,7 @@ export default function Register() {
     const pass = e.password
     await createAccount(email, pass)
     reset()
-    if (user) {
-      redirect('/update-profile')
-    }
+    setTab(0)
   }
 
   return (

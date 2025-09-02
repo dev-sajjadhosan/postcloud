@@ -1,6 +1,7 @@
 import { auth, githubProvider, googleProvider } from '@/lib/firebase'
 import {
   createUserWithEmailAndPassword,
+  deleteUser,
   onAuthStateChanged,
   signInWithEmailAndPassword,
   signInWithPopup,
@@ -8,6 +9,7 @@ import {
   updateProfile,
   User,
 } from 'firebase/auth'
+import { redirect } from 'next/navigation'
 import { toast } from 'sonner'
 import { create } from 'zustand'
 
@@ -21,7 +23,10 @@ interface AuthStoreProps {
 
   popupGoogle: () => Promise<void>
   popupGithub: () => Promise<void>
+
   logOut: () => Promise<void>
+  deleteAccount: () => Promise<void>
+
   updateProfile: (name: string, picture: string) => Promise<void>
   createAccount: (email: string, password: string) => Promise<void>
   loginAccount: (email: string, password: string) => Promise<void>
@@ -72,6 +77,17 @@ export const authStore = create<AuthStoreProps>((set, get) => ({
     await signOut(auth)
   },
 
+  deleteAccount: async () => {
+    try {
+      const user = get().user
+      if (!user) throw new Error('No user log in.')
+
+      await deleteUser(user)
+    } catch (err) {
+      console.error('Something wrong when Delete Account: ', err)
+    }
+  },
+
   createAccount: async (email: string, password: string) => {
     try {
       const userCredential = await createUserWithEmailAndPassword(
@@ -81,8 +97,8 @@ export const authStore = create<AuthStoreProps>((set, get) => ({
       )
       //   console.log('User Created: ', userCredential.user)
       toast.success('Created Account.')
-
       set({ user: userCredential.user, loading: false })
+      redirect('/update-profile')
     } catch (err) {
       console.log('Something wrong when create account: ', err)
       //   throw new Error(err?.message)

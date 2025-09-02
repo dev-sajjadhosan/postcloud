@@ -1,7 +1,7 @@
 import { authStore } from '@/store/authStore'
 
 export default function UpdateProfile() {
-  const { user, isCreate, setIsCreate } = authStore()
+  const { user, isCreate, setIsCreate, updateProfile } = authStore()
   return (
     <>
       <div className="flex items-center justify-center h-screen">
