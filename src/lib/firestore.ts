@@ -12,15 +12,8 @@ import {
   getDocs,
   serverTimestamp,
 } from 'firebase/firestore'
-import { User } from 'firebase/auth'
 
 // ---------------- USERS ----------------
-export async function createUserProfile(uid: string, data: UserProfile) {
-  await setDoc(doc(db, 'users', uid), {
-    ...data,
-    createdAt: serverTimestamp(),
-  })
-}
 
 export async function getUserProfile(uid: string) {
   const snap = await getDoc(doc(db, 'users', uid))

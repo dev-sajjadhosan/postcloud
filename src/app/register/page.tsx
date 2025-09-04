@@ -84,6 +84,7 @@ export default function Register() {
       if (!data.success)
         throw new Error(data.error || 'Failed to create API key')
 
+      console.log('Register data: ',data)
       toast.success('Account created and API key generated!')
       reset()
       setTab(0)

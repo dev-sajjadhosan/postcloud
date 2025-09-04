@@ -1,4 +1,7 @@
+import { ensureUserProfile } from '@/lib/ensureUserProfile'
 import { auth, githubProvider, googleProvider } from '@/lib/firebase'
+import { getUserProfile } from '@/lib/firestore'
+import { UserProfile } from '@/types/type'
 import {
   createUserWithEmailAndPassword,
   deleteUser,
@@ -14,10 +17,14 @@ import { create } from 'zustand'
 
 interface AuthStoreProps {
   user: User | null
+  dbuser: UserProfile | null
+
   loading: boolean
+  stateLoading: boolean
   isCreate: boolean
 
   setLoading: (val: boolean) => void
+  setStateLoading: (val: boolean) => void
   setIsCreate: (val: boolean) => void
 
   popupGoogle: () => Promise<void>
@@ -34,23 +41,51 @@ interface AuthStoreProps {
 
 export const authStore = create<AuthStoreProps>((set, get) => ({
   user: null,
+  dbuser: null,
+
   loading: true,
+  stateLoading: false,
   isCreate: false,
 
   setLoading: (val) => {
     set({ loading: val })
   },
 
+  setStateLoading: (val) => {
+    set({ stateLoading: val })
+  },
   setIsCreate: (val) => {
     set({ isCreate: val })
   },
 
   popupGoogle: async () => {
-    await signInWithPopup(auth, googleProvider)
+    try {
+      const result = await signInWithPopup(auth, googleProvider)
+      const user = result.user
+
+      await ensureUserProfile(user)
+
+      toast.success('Logged in with Google ✅')
+      set({ user: user })
+    } catch (err) {
+      console.error('Google login error:', err)
+      toast.error('Google login failed ❌')
+    }
   },
 
   popupGithub: async () => {
-    await signInWithPopup(auth, githubProvider)
+    try {
+      const result = await signInWithPopup(auth, githubProvider)
+      const user = result.user
+
+      await ensureUserProfile(user)
+
+      toast.success('Logged in with GitHub ✅')
+      set({ user: user })
+    } catch (err) {
+      console.error('GitHub login error:', err)
+      toast.error('GitHub login failed ❌')
+    }
   },
 
   updateProfile: async (name: string, picture: string) => {
@@ -99,7 +134,6 @@ export const authStore = create<AuthStoreProps>((set, get) => ({
       toast.success('Created Account.')
       set({ user, loading: false })
 
-      // ✅ Return the user so you can call getIdToken() later
       return user
     } catch (err) {
       console.log('Something wrong when create account: ', err)
@@ -114,7 +148,7 @@ export const authStore = create<AuthStoreProps>((set, get) => ({
         email,
         password,
       )
-      //   console.log('LogIN user: ', userCredential.user)
+      await ensureUserProfile(userCredential?.user)
       toast.success('Login Confirm.')
 
       set({ user: userCredential.user, loading: false })
@@ -124,13 +158,31 @@ export const authStore = create<AuthStoreProps>((set, get) => ({
   },
 
   initAuth: () => {
-    onAuthStateChanged(auth, (fireUser) => {
-      console.log('User Gated from Firebase:::: ', fireUser)
+    onAuthStateChanged(auth, async (fireUser) => {
+      if (fireUser) {
+        // get Firestore profile
+        const dbUserData = await getUserProfile(fireUser.uid)
+        const dbUser: UserProfile | null = dbUserData
+          ? {
+              name: dbUserData.name ?? '',
+              username: dbUserData.username ?? '',
+              bio: dbUserData.bio ?? '',
+              ...dbUserData,
+            }
+          : null
 
-      set({
-        user: fireUser,
-        loading: false,
-      })
+        set({
+          user: fireUser,
+          dbuser: dbUser, // 🔥 add your custom profile here
+          loading: false,
+        })
+      } else {
+        set({
+          user: null,
+          dbuser: null,
+          loading: false,
+        })
+      }
     })
   },
 }))

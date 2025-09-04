@@ -10,13 +10,13 @@ export const useImgBB = () => {
       setLoading(true)
       const formData = new FormData()
       formData.append('image', file)
-
+      
       const res = await fetch(
-        `https://api.imgbb.com/1/upload?key=${process.env.NEXT_PUBLIC_IMGBB_KEY}`,
+        `https://api.imgbb.com/1/upload?key=${process.env.NEXT_PUBLIC_IMGBB_API_KEY}`,
         {
           method: 'POST',
           body: formData,
-        }
+        },
       )
       const data = await res.json()
       setLoading(false)
@@ -27,6 +27,7 @@ export const useImgBB = () => {
     } catch (err) {
       setLoading(false)
       toast.error('Something went wrong with image upload')
+      console.error(err)
       return null
     }
   }

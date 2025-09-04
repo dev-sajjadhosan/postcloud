@@ -1,5 +1,4 @@
 import { adminAuth } from '@/lib/firebaseAdmin'
-import { getAuth } from 'firebase/auth'
 
 export async function verify(req: Request) {
   try {
@@ -7,7 +6,7 @@ export async function verify(req: Request) {
     if (!token) throw new Error('No token provided!')
 
     const decodedToken = await adminAuth.verifyIdToken(token)
-    return decodedToken.udi
+    return decodedToken.uid
   } catch (err) {
     console.error('Auth Error: ', err)
     throw new Error('Unauthorize')

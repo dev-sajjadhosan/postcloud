@@ -30,7 +30,7 @@ export default function TooltipBtn({
     <>
       <Tooltip>
         <TooltipTrigger>
-          <Button size={'icon'} variant={variant} onClick={action}>
+          <Button size={'icon'} variant={variant} onClick={action} type='button'>
             {icon}
           </Button>
         </TooltipTrigger>
