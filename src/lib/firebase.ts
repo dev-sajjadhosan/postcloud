@@ -1,6 +1,8 @@
 // lib/firebase.ts
-import { initializeApp } from 'firebase/app'
+import { getApp, getApps, initializeApp } from 'firebase/app'
 import { getAuth, GithubAuthProvider, GoogleAuthProvider } from 'firebase/auth'
+import { getFirestore } from 'firebase/firestore'
+import { getStorage } from 'firebase/storage'
 
 const firebaseConfig = {
   apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY,
@@ -11,9 +13,12 @@ const firebaseConfig = {
   appId: process.env.NEXT_PUBLIC_FIREBASE_APP_ID,
 }
 
-const app = initializeApp(firebaseConfig)
-const googleProvider = new GoogleAuthProvider()
-const githubProvider = new GithubAuthProvider()
-const auth = getAuth(app)
+export const app = !getApps().length ? initializeApp(firebaseConfig) : getApp()
+export const googleProvider = new GoogleAuthProvider()
+export const githubProvider = new GithubAuthProvider()
 
-export { auth, googleProvider, githubProvider }
+// Export services
+export const auth = getAuth(app)
+export const db = getFirestore(app)
+export const storage = getStorage(app)
+

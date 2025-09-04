@@ -9,7 +9,6 @@ import {
   updateProfile,
   User,
 } from 'firebase/auth'
-import { redirect } from 'next/navigation'
 import { toast } from 'sonner'
 import { create } from 'zustand'
 
@@ -28,7 +27,7 @@ interface AuthStoreProps {
   deleteAccount: () => Promise<void>
 
   updateProfile: (name: string, picture: string) => Promise<void>
-  createAccount: (email: string, password: string) => Promise<void>
+  createAccount: (email: string, password: string) => Promise<User>
   loginAccount: (email: string, password: string) => Promise<void>
   initAuth: () => void
 }
@@ -95,13 +94,16 @@ export const authStore = create<AuthStoreProps>((set, get) => ({
         email,
         password,
       )
-      //   console.log('User Created: ', userCredential.user)
+      const user = userCredential.user
+
       toast.success('Created Account.')
-      set({ user: userCredential.user, loading: false })
-      redirect('/update-profile')
+      set({ user, loading: false })
+
+      // ✅ Return the user so you can call getIdToken() later
+      return user
     } catch (err) {
       console.log('Something wrong when create account: ', err)
-      //   throw new Error(err?.message)
+      throw err
     }
   },
 
