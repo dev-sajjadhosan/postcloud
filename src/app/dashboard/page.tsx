@@ -1,49 +1,37 @@
 'use client'
-import DeleteAccountAlert from '@/components/custom/deleteAccountAlert'
-import Loader from '@/components/custom/Loader'
-import { Button } from '@/components/ui/button'
-import { authStore } from '@/store/authStore'
-import Image from 'next/image'
 
-export default function Dashboard() {
-  const { dbuser, loading } = authStore()
+import { Button } from '@/components/ui/button'
+import { Card, CardContent } from '@/components/ui/card'
+import { authStore } from '@/store/authStore'
+import { IconSquareRoundedPlus } from '@tabler/icons-react'
+import Link from 'next/link'
+
+// app/dashboard/page.tsx
+export default function DashboardPage() {
+  const { dbuser } = authStore()
+
   return (
     <>
-      <div className="flex flex-col justify-center items-center">
-        {loading ? (
-          <Loader />
-        ) : (
-          <>
-            <Image
-              width={300}
-              height={300}
-              src={dbuser?.photoURL || '/default.png'}
-              alt={dbuser?.displayName || 'postcloud'}
-            />
-            <h1 className="text-4xl">{dbuser?.displayName || dbuser?.name}</h1>
-            <h3 className="text-sm">{dbuser?.email}</h3>
-            <p className="text-sm mt-1.5 tracking-wide w-5xl text-center">
-              {dbuser?.bio}
-            </p>
-            <div className="mt-5 space-x-5">
-              <DeleteAccountAlert
-                label="Logout"
-                title="Are you absolutely sure?"
-                description="This action cannot be undone."
-                // action={}
-              />
-              <DeleteAccountAlert
-                label="Delete Account"
-                title="Are you absolutely sure?"
-                description="This action cannot be undone. This will permanently delete your account
-        and remove your data from our servers."
-                contentClassnName="w-lg!"
-                // action={}
-              />
-            </div>
-          </>
-        )}
-      </div>
+      {[]?.length <= 0 ? (
+        <div className="flex items-center justify-center h-full">
+          <Card className="w-xl h-60 bg-transparent! border-0">
+            <CardContent className="flex flex-col gap-1.5 items-center justify-center h-full text-center">
+              <h3 className="text-4xl">No Project</h3>
+              <p className="text-sm">
+                Lorem ipsum dolor sit amet, consectetur adipisicing elit. Fugiat
+                odio consequatur nostrum architecto in sequi, voluptatum ab?
+              </p>
+              <Link href={'create-new'}>
+                <Button size={'sm'} className="mt-5">
+                  <IconSquareRoundedPlus /> Create One
+                </Button>
+              </Link>
+            </CardContent>
+          </Card>
+        </div>
+      ) : (
+        <div className="p-5">Dashboard</div>
+      )}
     </>
   )
 }

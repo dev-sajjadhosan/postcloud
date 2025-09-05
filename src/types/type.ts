@@ -6,6 +6,19 @@ export interface UserProfile {
   username: string
   email: string
   bio: string
+  projects: Project[] | []
+}
+
+export interface Project {
+  id: string
+  name: string
+  description: string
+  apiKey: string
+  email: string
+  uid: string
+  time: string
+  date: string
+  url: string
 }
 
 export interface EmailLog {
