@@ -1,11 +1,5 @@
 import Link from 'next/link'
 import {
-  Cloud,
-  Rocket,
-  BarChart3,
-  CloudFog,
-  CloudAlert,
-  CloudCog,
   User,
   Lock,
   Bell,
@@ -16,14 +10,14 @@ import {
   Users,
   MessageCircle,
   CheckCircle,
-  Loader2,
   Mail,
   Settings2,
   Globe,
   Zap,
   Loader,
+  CloudUpload,
+  CloudAlert,
 } from 'lucide-react'
-import Header from '@/components/custom/header'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
 
@@ -131,7 +125,6 @@ const howToUseIt = [
 export default function Home() {
   return (
     <main className="min-h-screen flex flex-col">
-      {/* <Header /> */}
       <section className="flex flex-col items-center text-center">
         <h1 className="text-[17rem] font-mac bg-gradient-to-r from-zinc-900 via-stone-700 to-neutral-500 inline-block text-transparent bg-clip-text">
           PostCloud
@@ -143,9 +136,11 @@ export default function Home() {
           and developer-friendly.
         </p>
         <div className="flex items-center gap-3.5 mt-7.5">
-          <Button>
-            Get Start <CloudFog />
-          </Button>
+          <Link href={'/get-starts'}>
+            <Button>
+              Get Start <CloudUpload />
+            </Button>
+          </Link>
           <Button variant={'ghost'}>
             Show how it work ? <CloudAlert />{' '}
           </Button>
@@ -169,7 +164,7 @@ export default function Home() {
                   className="w-fit duration-300 hover:scale-105 hover:-translate-2 cursor-pointer border-0 bg-gradient-to-r from-zinc-900 to-stone-900"
                 >
                   <CardContent>
-                    {f.icon && <f.icon className="text-muted-foreground" />}
+                    {f.icon && <f.icon className="text-muted-foreground mb-2" />}
                     <h3 className="text-lg">{f.label}</h3>
                     <p className="text-xs font-light tracking-wide">{f.des}</p>
                   </CardContent>
@@ -213,7 +208,7 @@ export default function Home() {
                 >
                   <htui.icon
                     size={htui.loading ? 31 : 25}
-                    className={`duration-300 ${htui.loading && 'animate-spin'}`}
+                    className={`duration-300 mb-2 ${htui.loading && 'animate-spin'}`}
                   />
                   <h3
                     className={`text-lg ${
