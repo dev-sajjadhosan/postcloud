@@ -19,6 +19,7 @@ interface AuthStoreProps {
   user: User | null
   dbuser: UserProfile | null
 
+  formTab: number | string
   loading: boolean
   stateLoading: boolean
   isCreate: boolean
@@ -26,6 +27,7 @@ interface AuthStoreProps {
   setLoading: (val: boolean) => void
   setStateLoading: (val: boolean) => void
   setIsCreate: (val: boolean) => void
+  setFormTab: (val: number | string) => void
 
   popupGoogle: () => Promise<void>
   popupGithub: () => Promise<void>
@@ -33,7 +35,7 @@ interface AuthStoreProps {
   logOut: () => Promise<void>
   deleteAccount: () => Promise<void>
 
-  updateProfile: (name: string, picture: string) => Promise<void>
+  updateProfile: (name?: string, picture?: string) => Promise<void>
   createAccount: (email: string, password: string) => Promise<User>
   loginAccount: (email: string, password: string) => Promise<void>
   initAuth: () => void
@@ -43,6 +45,7 @@ export const authStore = create<AuthStoreProps>((set, get) => ({
   user: null,
   dbuser: null,
 
+  formTab: 2,
   loading: true,
   stateLoading: false,
   isCreate: false,
@@ -50,7 +53,9 @@ export const authStore = create<AuthStoreProps>((set, get) => ({
   setLoading: (val) => {
     set({ loading: val })
   },
-
+  setFormTab: (val) => {
+    set({ formTab: val })
+  },
   setStateLoading: (val) => {
     set({ stateLoading: val })
   },
@@ -88,18 +93,22 @@ export const authStore = create<AuthStoreProps>((set, get) => ({
     }
   },
 
-  updateProfile: async (name: string, picture: string) => {
+  updateProfile: async (name?: string, picture?: string) => {
     try {
       const user = get().user
       if (!user) throw new Error('No user login!')
 
       await updateProfile(user, {
-        displayName: name,
-        photoURL: picture,
+        displayName: name ?? user.displayName ?? '',
+        photoURL: picture ?? user.photoURL ?? '',
       })
 
       set({
-        user: { ...user, displayName: name, photoURL: picture } as User,
+        user: {
+          ...user,
+          displayName: name ?? user.displayName,
+          photoURL: picture ?? user.photoURL,
+        } as User,
         isCreate: true,
       })
     } catch (err) {
@@ -167,6 +176,9 @@ export const authStore = create<AuthStoreProps>((set, get) => ({
               name: dbUserData.name ?? '',
               username: dbUserData.username ?? '',
               bio: dbUserData.bio ?? '',
+              displayName: dbUserData.displayName ?? '',
+              email: dbUserData.email ?? '',
+              projects: dbUserData.projects ?? [],
               ...dbUserData,
             }
           : null

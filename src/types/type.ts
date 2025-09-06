@@ -1,12 +1,12 @@
 export interface UserProfile {
   picture?: FileList
   photoURL?: string
-  name: string
-  displayName: string
-  username: string
-  email: string
-  bio: string
-  projects: Project[] | []
+  name?: string
+  displayName?: string
+  username?: string
+  email?: string
+  bio?: string
+  projects?: Project[] | []
 }
 
 export interface Project {
